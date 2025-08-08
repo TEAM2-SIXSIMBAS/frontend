@@ -1,0 +1,49 @@
+.partnership-card {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: white;
+  transition: box-shadow 0.2s;
+}
+
+.partnership-card:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.partnership-card-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.partnership-card-content {
+  padding: 10px 15px;
+}
+
+.partnership-card-title {
+  font-size: 14px;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.partnership-card-merchant {
+  font-size: 12px;
+  color: #777;
+  margin-top: 3px;
+}
+
+.partnership-card-tags {
+  margin-top: 8px;
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.partnership-tag {
+  font-size: 11px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 2px 6px;
+}
