@@ -1,77 +1,79 @@
-:root {
-  --brand: #0C2E86;
-  --brand-weak: #788BBC;
-  --ink: #0f1b40;
-  --container: 1200px;
+:root{
+  --banner-h: 145px;
+  --banner-gap: 24px;
+  --tab-h: 24px;
+  --tab-gap: 16px;
 }
 
-.top-banner {
-  width: 100%;
+.top-banner{
+  position: sticky;
+  top: 0;
+  z-index: 10;
   background: #fff;
-}
-
-.top-banner__inner {
-  max-width: var(--container);
-  margin: 0 auto;
-  padding: 16px 20px 8px; /* 이미지처럼 여백 얇게 */
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: end;
-  border-bottom: 1px solid rgba(23, 62, 154, 0.08);
-}
-
-.top-banner__title {
-  margin: 0;
-  font-weight: 800;
-  font-size: 32px;
-  color: var(--brand);
-  letter-spacing: -0.02em;
-}
-
-.top-banner__tabs {
+  min-height: 100px;
   display: flex;
-  gap: 28px;
+  align-items: center;
 }
 
-.top-banner__tab {
-  position: relative;
-  background: none;
-  border: 0;
-  padding: 6px 0 10px;
-  font-size: 16px;
-  cursor: pointer;
-  color: var(--brand-weak);
-  font-weight: 600;
-  outline: none;
+.top-banner-inner{
+  max-width: var(--container);
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: var(--page-pad);
+  display: flex;
+  align-items: center;
+  gap: var(--banner-gap);
 }
 
-.top-banner__tab:hover {
-  color: var(--brand);
-}
-
-.top-banner__tab.is-active {
-  color: var(--brand);
+/* 타이틀 */
+.top-banner-title{
+  margin: 0;
+  font-size: 40px;
   font-weight: 800;
+  color: var(--brand-500);
+  letter-spacing: 0;
+  line-height: 1;
 }
 
-.top-banner__tab.is-active::after {
-  content: "";
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  height: 3px;
-  background: var(--brand);
+/* 탭 그룹 (오른쪽 정렬) */
+.top-banner-tabs{
+  display: flex;
+  gap: var(--tab-gap);
+  margin-left: auto;
+  height: var(--tab-h);
+  align-items: center;
+}
+
+/* 탭 버튼 */
+.top-banner-tab{
+  appearance: none;
+  border: 1px solid transparent;
+  background: transparent;
+  padding: 0 10px;               /* 높이 24 유지 */
+  line-height: var(--tab-h);
+  color: #788BBC;
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
   border-radius: 999px;
+  transition: color .15s ease, background-color .15s ease, border-color .15s ease;
+}
+.top-banner-tab:hover{
+  color: #5b71a8;
 }
 
-@media (max-width: 720px) {
-  .top-banner__inner {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-  .top-banner__tabs {
-    gap: 18px;
-  }
-  .top-banner__title {
-    font-size: 26px;
+/* 활성 탭 */
+.top-banner-tab.is-active{
+  color: var(--brand-500);
+  font-weight: 700;
+}
+
+/* 반응형 */
+@media (max-width: 640px){
+  .top-banner{ min-height: 112px; }
+  .top-banner__title, .top-banner-title{ font-size: 28px; }
+  .top-banner__tab, .top-banner-tab{
+    font-size: 14px;
+    padding: 0 8px;
   }
 }
