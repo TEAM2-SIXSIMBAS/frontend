@@ -11,7 +11,7 @@
   --line-200:#E6ECF7;
   --bg-50:#F7F9FE;
 
-  --container: 881px;   /* 피그마 타이틀+탭 그룹 기준폭 */
+  --container: 885px;   /* 피그마 타이틀+탭 그룹 기준폭 */
   --page-pad: 16px;
 
   --radius-8: 8px;
@@ -52,9 +52,9 @@ body{
 }
 .section__title{
   margin:0;
-  font-weight:800;
+  font-weight:700;
   color:var(--brand-500);
-  font-size:20px;
+  font-size:19px;
 }
 .section--hot .section__title{ /* "지금 핫한 혜택 Top 3" */ }
 .section--list .section__title{ /* "제휴 정보" */ }
