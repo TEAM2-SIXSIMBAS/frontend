@@ -1,14 +1,14 @@
 import React from "react";
 import "../components/NaviBar.css";
 
-export default function NaviBar() {
+function NaviBar() {
     return (
-        <nav className="navi-bar">
-            <ul>
-                <li>제휴 정보</li>
-                <li>제휴 지도</li>
-                <li>제휴사 정보</li>
-            </ul>
-        </nav>
+        <div className="navbar">
+            <span className="nav-item">제휴 정보</span>
+            <span className="nav-item">제휴 지도</span>
+            <span className="nav-item">가게 정보</span>
+        </div>
     );
 }
+
+export default NaviBar;

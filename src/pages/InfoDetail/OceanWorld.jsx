@@ -1,18 +1,18 @@
 import React, { useState } from "react";
 import "../../styles/InfoDetail/OceanWorld.css";
+import NaviBar from "../../components/NaviBar"; // 네비바 불러오기
+
 function OceanWorld() {
     const [activeTab, setActiveTab] = useState("info");
 
     return (
         <div className="oceanworld-container">
-            {/* 상단 타이틀 & 네비게이션 (현재는 텍스트만) */}
+            {/* 상단 네비바 */}
+            <NaviBar />
+
+            {/* 상단 타이틀 & 네비게이션 */}
             <div className="top-header">
                 <h1 className="title-text">가대제휴</h1>
-                <div className="nav-texts">
-                    <span className="nav-item">제휴 정보</span>
-                    <span className="nav-item">제휴 지도</span>
-                    <span className="nav-item">가게 정보</span>
-                </div>
             </div>
 
             {/* 메인 카드 */}
