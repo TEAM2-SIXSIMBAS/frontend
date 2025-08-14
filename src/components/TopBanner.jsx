@@ -1,8 +1,24 @@
 import "./TopBanner.css";
+import { useNavigate } from "react-router-dom";
 
 const TABS = ["제휴 정보", "제휴 지도", "제휴사 정보"];
+const TAB_ROUTES = {
+  "제휴 정보": "/",
+  "제휴 지도": "/map",
+  "제휴사 정보": "/partners",
+};
 
 export default function TopBanner({ activeTab = "제휴 정보", onChange }) {
+  const navigate = useNavigate();
+
+  const handleClick = (tab) => {
+    // 기존 동작 유지
+    onChange && onChange(tab);
+    // 라우터 이동 추가
+    const to = TAB_ROUTES[tab];
+    if (to) navigate(to);
+  };
+
   return (
     <header className="top-banner">
       <div className="top-banner-inner">
@@ -16,7 +32,7 @@ export default function TopBanner({ activeTab = "제휴 정보", onChange }) {
                 key={tab}
                 type="button"
                 className={`top-banner-tab ${selected ? "is-active" : ""}`}
-                onClick={() => onChange && onChange(tab)}
+                onClick={() => handleClick(tab)}
               >
                 {tab}
               </button>

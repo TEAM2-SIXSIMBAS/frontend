@@ -19,6 +19,16 @@
 }
 
 *{ box-sizing:border-box; }
+
+/* ▼ 스크롤바 공간을 항상 예약해 페이지 좌우 흔들림 방지 */
+html{
+  scrollbar-gutter: stable both-edges;
+}
+/* 구형 브라우저 폴백 */
+@supports not (scrollbar-gutter: stable){
+  html{ overflow-y: scroll; }
+}
+
 html, body, #root{ height:100%; width:100%; }
 body{
   margin:0;
@@ -87,21 +97,38 @@ body{
 }
 .pagination__btn,
 .pagination__num{
+  /* 폭/높이 고정 + 등폭 숫자 → 레이아웃 흔들림 방지 */
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:32px; height:32px;
+  padding:0 8px;
   border:none; background:transparent;
-  padding:4px 8px;
+  box-sizing:border-box;
   font-weight:600; font-size:12px;
+  font-variant-numeric: tabular-nums; /* 숫자 등폭 */
   color:var(--ink-700);
   cursor:pointer;
+  /* 활성 상태에서 border가 생겨도 전체 폭이 변하지 않도록 기본 투명 보더 지정 */
+  border-bottom:2px solid transparent;
 }
 .pagination__btn[disabled]{ opacity:.45; cursor:default; }
+/* 활성 효과: border-bottom 색만 바꿔서 레이아웃 불변 */
 .pagination__num.is-active{
   color:var(--brand-500);
-  border-bottom:2px solid var(--brand-500);
+  border-bottom-color: var(--brand-500);
 }
 
 /* 카드 그리드 */
 .grid{ display:grid; gap:16px; }
 .grid--3{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+/* 이미지 로딩 시 높이 요동 방지: 자리 먼저 확보 */
+.partnership-card img,
+.card__image{
+  width:100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display:block;
+}
 
 /* 모바일에서도 3열 유지 */
 @media (max-width: 960px){
