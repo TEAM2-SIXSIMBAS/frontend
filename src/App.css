@@ -1,42 +1,62 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+html,
+body {
+    height: 100%;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.app-container {
+    min-height: 100vh;
+    background: linear-gradient(
+            to top,
+            rgba(255, 255, 255, 0),
+            rgba(255, 255, 255, 1)
+        ),
+        linear-gradient(
+            to right,
+            rgba(74, 79, 166, 0.5),
+            rgba(168, 221, 171, 0.5),
+            rgba(168, 181, 216, 0.5)
+        );
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.box-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 80px;
+    width: 90vw;
+    max-width: 1200px;
+    flex-wrap: wrap;
 }
 
-.card {
-  padding: 2em;
+.box {
+    flex: 1 1 30%;
+    max-width: 300px;
+    aspect-ratio: 2/3;
+    background-color: white;
+    border-radius: 16px;
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.2);
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s, background-color 0.2s;
 }
 
-.read-the-docs {
-  color: #888;
+.box:hover {
+    background-color: #f3f3f3;
+    transform: translateY(-5px);
 }
