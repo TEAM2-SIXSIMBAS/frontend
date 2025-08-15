@@ -1,0 +1,119 @@
+/* ShopInfo 전용 (App.css 토큰 재사용)
+   — 제휴 정보 카드 톤과 이어지도록 강화 스타일 */
+
+.shop {
+  padding-top: 0;
+  background: transparent;
+}
+.shop__head {
+  margin-bottom: 14px;
+}
+.shop__title {
+  font-size: 20px;
+  color: var(--ink-900);
+}
+
+/* 드롭다운을 제휴 정보 페이지와 톤 맞춤 */
+.shop .controls select {
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid var(--line-200);
+  background: #fff;
+  color: var(--ink-700);
+  font-size: 12px;
+}
+
+/* 2열 그리드 (모바일도 2열 유지 요청 기준) */
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+/* 카드: 제휴 정보 카드와 비슷한 볼륨감 & 선명한 보더 */
+.shop-card {
+  background: #fff;
+  border: 1.5px solid #dbe3f5;
+  border-radius: 14px;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.06s ease;
+}
+.shop-card:hover {
+  border-color: var(--brand-500);
+  box-shadow: 0 4px 18px rgba(12, 46, 134, 0.08);
+  transform: translateY(-1px);
+}
+
+/* 상단 바: 아주 옅은 블루 배경 + 둥근 모서리 */
+.shop-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: #f1f5ff; /* 제휴 카드의 라이트 톤 */
+  border-bottom: 1px solid var(--line-200);
+}
+.shop-card__title {
+  margin: 0;
+  color: var(--ink-900);
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+}
+
+/* 즐겨찾기 버튼: 아웃라인 → 활성 시 브랜드 톤 채도 업 */
+.shop-card__fav {
+  height: 30px;
+  padding: 0 12px;
+  border: 1.5px solid #cfd8ee;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ink-700);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.shop-card__fav:hover {
+  border-color: var(--brand-500);
+  color: var(--brand-500);
+}
+.shop-card__fav.is-on {
+  border-color: var(--brand-500);
+  color: #fff;
+  background: var(--brand-500);
+}
+
+/* 본문 */
+.shop-card__body {
+  padding: 14px;
+}
+
+/* 메타 정보: 좌 라벨/우 값 배치 */
+.shop-meta {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  row-gap: 8px;
+  column-gap: 10px;
+  font-size: 13px;
+  color: var(--ink-700);
+}
+.shop-meta dt {
+  margin: 0;
+  color: var(--ink-500);
+}
+.shop-meta dd {
+  margin: 0;
+}
+
+/* 작은 화면 대응 */
+@media (max-width: 420px) {
+  .shop-meta {
+    grid-template-columns: 84px 1fr;
+  }
+  .shop-card__title {
+    font-size: 15px;
+  }
+}

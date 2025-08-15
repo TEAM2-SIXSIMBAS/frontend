@@ -1,0 +1,100 @@
+/* ================================
+   InfoMap 전용 스타일 (cc.css)
+   ================================ */
+/* 이 파일은 App.css의 디자인 토큰/그리드에 "추가"만 합니다.
+   전역 컨테이너/패딩/네비바 위치는 App.css가 책임집니다. */
+
+/* 페이지 타이틀 */
+.mappage__title {
+  margin: 6px 0 0;
+  font-size: 34px;
+  font-weight: 900;
+  color: var(--brand-500);
+  letter-spacing: -0.4px;
+}
+
+/* 소개 문구 (학교 주변 제휴 매장...) */
+.mappage__sub {
+  margin: 6px 0 12px; /* 위는 6px, 아래는 12px로 제목과 적당히 붙임 */
+  font-size: 13px;
+  color: var(--ink-500);
+}
+
+/* 첫 섹션이 TopBanner 바로 아래 오도록 간격 조정 */
+.app__container > main > .section:first-child {
+  margin-top: 0; /* 기본 여백 제거 */
+  padding-top: 0; /* 안쪽 위 여백 제거 */
+}
+
+/* 지도 카드 */
+.mapcard {
+  background: #fff;
+  border: 1px solid var(--line-200);
+  border-radius: var(--radius-12);
+  box-shadow: 0 8px 24px rgba(13, 33, 80, 0.06);
+  padding: 12px;
+}
+.mapcard__inner {
+  position: relative;
+  height: 520px;
+  border-radius: var(--radius-12);
+  background: linear-gradient(180deg, #f6faff, #eaf2ff 40%, #e3eeff);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+/* 마커 스타일 (색상은 프로젝트 톤에 맞춤) */
+.pin {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.06);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 16px rgba(12, 46, 134, 0.18);
+  cursor: pointer;
+}
+.pin::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -12px;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+}
+.pin__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0.95;
+}
+
+.pin--sky {
+  background: #89c2ff;
+}
+.pin--sky::after {
+  border-top: 14px solid #89c2ff;
+}
+
+.pin--amber {
+  background: #f4b940;
+}
+.pin--amber::after {
+  border-top: 14px solid #f4b940;
+}
+
+/* 작은 화면 여지 */
+@media (max-width: 600px) {
+  .mappage__title {
+    font-size: 28px;
+  }
+  .mapcard__inner {
+    height: 420px;
+  }
+}
