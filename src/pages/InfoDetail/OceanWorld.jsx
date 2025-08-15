@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import "../../styles/InfoDetail/OceanWorld.css";
 import NaviBar from "../../components/NaviBar"; // 네비바 불러오기
+import ReviewModal from "../ReviewWrite/ReviewModal";
 
 function OceanWorld() {
     const [activeTab, setActiveTab] = useState("info");
+    const [showModal, setShowModal] = useState(false);
+
 
     return (
         <div className="oceanworld-container">
@@ -74,7 +77,8 @@ function OceanWorld() {
                     )}
                     {activeTab === "review" && (
                         <div className="review-section">
-                            <button className="review-write-btn">
+                            <button className="review-write-btn"
+                            onClick={() => setShowModal(true)}>
                                 리뷰 작성
                             </button>
                             <p>아직 작성된 리뷰가 없습니다.</p>
@@ -82,6 +86,9 @@ function OceanWorld() {
                     )}
                 </div>
             </div>
+            {showModal && (
+                <ReviewModal onClose={() => setShowModal(false)} />
+            )}
         </div>
     );
 }

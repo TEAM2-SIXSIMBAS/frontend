@@ -1,0 +1,79 @@
+:root{
+  --banner-h: 145px;
+  --banner-gap: 24px;
+  --tab-h: 24px;
+  --tab-gap: 16px;
+}
+
+.top-banner{
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #fff;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+}
+
+.top-banner-inner{
+  max-width: var(--container);
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: var(--page-pad);
+  display: flex;
+  align-items: center;
+  gap: var(--banner-gap);
+}
+
+/* 타이틀 */
+.top-banner-title{
+  margin: 0;
+  font-size: 40px;
+  font-weight: 800;
+  color: var(--brand-500);
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+/* 탭 그룹 (오른쪽 정렬) */
+.top-banner-tabs{
+  display: flex;
+  gap: var(--tab-gap);
+  margin-left: auto;
+  height: var(--tab-h);
+  align-items: center;
+}
+
+/* 탭 버튼 */
+.top-banner-tab{
+  appearance: none;
+  border: 1px solid transparent;
+  background: transparent;
+  padding: 0 10px;               /* 높이 24 유지 */
+  line-height: var(--tab-h);
+  color: #788BBC;
+  font-size: 21px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 999px;
+  transition: color .15s ease, background-color .15s ease, border-color .15s ease;
+}
+.top-banner-tab:hover{
+  color: #5b71a8;
+}
+
+/* 활성 탭 */
+.top-banner-tab.is-active{
+  color: var(--brand-500);
+  font-weight: 700;
+}
+
+/* 반응형 */
+@media (max-width: 640px){
+  .top-banner{ min-height: 112px; }
+  .top-banner__title, .top-banner-title{ font-size: 28px; }
+  .top-banner__tab, .top-banner-tab{
+    font-size: 14px;
+    padding: 0 8px;
+  }
+}

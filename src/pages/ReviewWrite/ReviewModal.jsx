@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import { useParams } from "react-router-dom"; // URL에서 storeId 뽑을 때 사용 (선택)
-import "./ReviewModal.css";
+import "../../styles/ReviewWrite/ReviewModal.css";
 
 export default function ReviewModal({ onClose, storeId }) {
   const modalRef = useRef(null);
