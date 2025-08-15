@@ -60,14 +60,13 @@ body{
   display:flex; align-items:center; justify-content:space-between;
   margin-bottom: 8px;
 }
+
 .section__title{
   margin:0;
   font-weight:700;
   color:var(--brand-500);
   font-size:19px;
 }
-.section--hot .section__title{ /* "지금 핫한 혜택 Top 3" */ }
-.section--list .section__title{ /* "제휴 정보" */ }
 
 /* 컨트롤(셀렉트) */
 .section__head--controls .controls{
