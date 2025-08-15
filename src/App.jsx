@@ -1,9 +1,8 @@
-
 import { useMemo, useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import TopBanner from "./components/TopBanner";
 import PartnershipCard from "./components/PartnershipCard";
-import InfoDetail from "./pages/InfoDetail/a";
+import OceanWorld from "./pages/InfoDetail/OceanWorld";
 import InfoMap from "./pages/InfoMap/c";
 import ShopInfo from "./pages/ShopInfo/f";
 import "./App.css";
@@ -166,14 +165,15 @@ function HomePage() {
         <TopBanner activeTab={activeTab} onChange={setActiveTab} />
 
         <main>
-          {/* Top3: 항시 3개 고정 */}
+          {/* Top3: 3개 고정 */}
           <section className="section section--hot">
             <div className="section__head">
               <h2 className="section__title">지금 핫한 혜택 Top 3</h2>
             </div>
             <div className="grid grid--3">
               {top3.map(item => (
-                <PartnershipCard key={item.id} item={item} to={`/info/${item.id}`} />
+                <PartnershipCard key={item.id} item={item} to={`/OceanWorld`} />
+                // <PartnershipCard key={item.id} item={item} to={`/info/${item.id}`} />
               ))}
             </div>
           </section>
@@ -204,7 +204,8 @@ function HomePage() {
 
             <div className="grid grid--3">
               {current.map(item => (
-                <PartnershipCard key={item.id} item={item} to={`/info/${item.id}`} />
+                <PartnershipCard key={item.id} item={item} to={`/OceanWorld`} />
+                // <PartnershipCard key={item.id} item={item} to={`/info/${item.id}`} />
               ))}
             </div>
 
@@ -233,7 +234,8 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/info/:id" element={<InfoDetail />} />
+        {/* <Route path="/info/:id" element={<InfoDetail />} /> */}
+        <Route path="/OceanWorld" element={<OceanWorld />} />
         <Route path="/map" element={<InfoMap />} />
         <Route path="/partners" element={<ShopInfo />} />
       </Routes>
