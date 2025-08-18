@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
-import { useParams } from "react-router-dom"; // URL에서 storeId 뽑을 때 사용 (선택)
 import "../../styles/ReviewWrite/ReviewModal.css";
 
-export default function ReviewModal({ onClose, storeId }) {
+export default function ReviewModal({ onClose, partnershipId }) {
   const modalRef = useRef(null);
   const firstFocusableRef = useRef(null);
 
@@ -19,9 +18,10 @@ export default function ReviewModal({ onClose, storeId }) {
   const receiptInputRef = useRef(null);
   const reviewInputRefs = useRef([]);
 
-  // URL에서 storeId를 가져오는 경우 (prop 우선)
-  const params = useParams();
-  const effectiveStoreId = storeId ?? params?.storeId;
+  // ✅ 모달이 열릴 때 부모에서 받은 partnershipId 확인 로그
+  useEffect(() => {
+    console.log("[ReviewModal] OPEN - partnershipId (from parent) =", partnershipId);
+  }, [partnershipId]);
 
   // 바디 스크롤 잠금 + 초기 포커스 + ESC/Tab 처리
   useEffect(() => {
@@ -104,8 +104,12 @@ export default function ReviewModal({ onClose, storeId }) {
 
   // ---------- 제출 핸들러 ----------
   const handleSubmit = async () => {
-    if (!effectiveStoreId) {
-      alert("storeId를 확인해 주세요.");
+    if (!partnershipId) {
+      alert("partnershipId를 확인해 주세요.");
+      return;
+    }
+    if (!receipt?.file) {
+      alert("영수증 사진을 반드시 등록해 주세요.");
       return;
     }
     if (!content.trim()) {
@@ -116,36 +120,28 @@ export default function ReviewModal({ onClose, storeId }) {
     try {
       setSubmitting(true);
 
+      // 서버 명세에 맞춘 키 이름: text / receiptFile / photoFiles
       const fd = new FormData();
-      fd.append("content", content);
-
-      if (receipt?.file) {
-        fd.append("receipt", receipt.file, receipt.file.name);
-      }
-
-      // 서버가 photos[]를 요구하면 PHOTO_KEY를 "photos[]"로 변경
-      const PHOTO_KEY = "photos";
+      fd.append("text", content); // 리뷰 본문
+      fd.append("receiptFile", receipt.file); // 영수증 1장 (필수)
       reviews.filter(Boolean).forEach((r) => {
-        fd.append(PHOTO_KEY, r.file, r.file.name);
+        fd.append("photoFiles", r.file); // 리뷰 사진 N장
       });
 
-      const res = await fetch(
-        `/partnership-info/detail/${encodeURIComponent(effectiveStoreId)}/review/post`,
-        {
-          method: "POST",
-          body: fd,
-          // Content-Type은 넣지 말 것! (브라우저가 boundary 포함해 자동 설정)
-          // headers: {},
-          credentials: "include", // 세션/쿠키 인증 쓰면 유지
-        }
-      );
+      const postUrl = `/partnership-info/detail/${encodeURIComponent(partnershipId)}/review/post`;
+      console.log("[ReviewModal] SUBMIT - POST URL =", postUrl);
+
+      const res = await fetch(postUrl, {
+        method: "POST",
+        body: fd,
+        credentials: "include",
+      });
 
       if (!res.ok) {
         const text = await res.text().catch(() => "");
         throw new Error(text || `HTTP ${res.status}`);
       }
 
-      // const data = await res.json().catch(() => null); // 필요 시 파싱
       alert("리뷰가 등록되었습니다.");
       onClose();
     } catch (err) {

@@ -2,28 +2,37 @@ import React from "react";
 import { Link } from "react-router-dom";
 import "./PartnershipCard.css";
 
-export default function PartnershipCard(props) {
-  // props 정리
-  const item = props.item ?? {
-    img: props.imageUrl,
-    title: props.benefit,
-    merchant: props.name,
-    tags: props.tags,
-  };
-  const { img, title, merchant } = item;
-  const tags = Array.isArray(item.tags) ? item.tags : [];
+/**
+ * 기대 props.item (App.jsx의 toCard() 결과)
+ * {
+ *   id: number,
+ *   title: string,        // dto.content
+ *   merchant: string,     // dto.storeName
+ *   img: string,          // dto.url
+ *   category: string,     // dto.category
+ *   tags: [organization?, type?], // 순서 보장: [기관, 서비스]
+ *   hot: boolean
+ * }
+ */
+export default function PartnershipCard({ item, to, onClick }) {
+  if (!item) return null;
 
-  // 라우팅용: to가 오면 그대로, 없으면 id로 경로 생성
-  const href = props.to ?? (props.id != null ? `/benefits/${props.id}` : undefined);
+  const { id, title, merchant, img, category } = item;
 
-  const toneFor = (label) => {
-    if (/총학|총동연|컴공|공과대|blue/i.test(label)) return "blue";
-    if (/식당|카페|의류|의료|green/i.test(label)) return "green";
-    if (/할인|서비스|yellow/i.test(label)) return "yellow";
-    return "blue";
-  };
+  // App.jsx의 toCard()가 tags = [organization, type] 으로 넣어줌
+  const organization = Array.isArray(item.tags) ? item.tags[0] : undefined; // blue
+  const serviceType  = Array.isArray(item.tags) ? item.tags[1] : undefined; // yellow
 
-  // 공통 내부 UI (Link든 article이든 재사용)
+  // 태그는 "기관 / 업종 / 서비스" 순서로 교체 렌더링
+  const tags = [
+    { label: organization, tone: "blue" },   // 기관
+    { label: category,     tone: "green" },  // 업종
+    { label: serviceType,  tone: "yellow" }, // 서비스
+  ].filter(t => typeof t.label === "string" && t.label.trim() !== "");
+
+  // 라우팅: App.jsx에서 to를 넘겨주므로 우선 사용
+  const href = to ?? (id != null ? `/benefits/${id}` : undefined);
+
   const Inner = (
     <>
       <div className="card-image-wrapper">
@@ -33,6 +42,7 @@ export default function PartnershipCard(props) {
           className="card-image"
           loading="lazy"
           draggable={false}
+          onError={(e) => { e.currentTarget.style.visibility = "hidden"; }}
         />
       </div>
 
@@ -43,9 +53,9 @@ export default function PartnershipCard(props) {
           <span className="card-name">{merchant}</span>
 
           <div className="card-tags">
-            {tags.map((label, i) => (
-              <span key={`${label}-${i}`} className={`card-tag ${toneFor(label)}`}>
-                {label}
+            {tags.map((t, i) => (
+              <span key={`${t.label}-${i}`} className={`card-tag ${t.tone}`}>
+                {t.label}
               </span>
             ))}
           </div>
@@ -54,24 +64,18 @@ export default function PartnershipCard(props) {
     </>
   );
 
-  // 1) 링크 가능하면 Link로 감싸 접근성/라우팅 OK
-  if (href) {
-    return (
-      <Link
-        to={href}
-        className="partnership-card"
-        onClick={props.onClick}
-        aria-label={title ? `${title} 상세 보기` : "상세 보기"}
-        state={{ item }} // 필요하면 상세페이지에서 useLocation().state로 즉시 사용 가능
-      >
-        {Inner}
-      </Link>
-    );
-  }
-
-  // 2) 링크 경로가 없을 때는 기존 onClick 동작 유지 (임시)
-  return (
-    <article className="partnership-card" onClick={props.onClick} role="button" tabIndex={0}>
+  return href ? (
+    <Link
+      to={href}
+      className="partnership-card"
+      onClick={onClick}
+      aria-label={title ? `${title} 상세 보기` : "상세 보기"}
+      state={{ item }}
+    >
+      {Inner}
+    </Link>
+  ) : (
+    <article className="partnership-card" onClick={onClick} role="button" tabIndex={0}>
       {Inner}
     </article>
   );

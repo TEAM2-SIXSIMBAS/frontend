@@ -36,7 +36,7 @@
 .card-benefit {
   font-family: "Inter", sans-serif;
   font-weight: 900;
-  font-size: 15px;
+  font-size: 16px;
   color: #0C2E86;
   margin: 0;
   white-space: nowrap;
@@ -53,7 +53,7 @@
 .card-name {
   font-family: "Inter", sans-serif;
   font-weight: 900;
-  font-size: 12px;
+  font-size: 13px;
   color: #47609F;
   max-width: 110px;
   white-space: nowrap;
@@ -68,28 +68,23 @@
 
 .card-tag {
   font-family: "Inter", sans-serif;
-  font-weight: 700;
-  font-size: 10px;
-  padding: 2px 6px;
-  border-radius: 999px;
+  font-weight: 900;
+  font-size: 13px;
+  color: #ffffff;
+  padding: 3px 5px;
+  border-radius: 5px;
   border: 1px solid transparent;
   line-height: 1;
 }
 
 .card-tag.blue {
-  background-color: #EAF0FF;
-  color: #0C2E86;
-  border-color: #0C2E86;
+  background-color: #0C2E86;
 }
 
 .card-tag.green {
-  background-color: #E9F8F0;
-  color: #26A867;
-  border-color: #26A867;
+  background-color: #62D660;
 }
 
 .card-tag.yellow {
-  background-color: #FFF6E0;
-  color: #C48A00;
-  border-color: #C48A00;
+  background-color: #FFC45E
 }

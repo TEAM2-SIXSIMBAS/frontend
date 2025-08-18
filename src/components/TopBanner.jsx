@@ -12,9 +12,7 @@ export default function TopBanner({ activeTab = "제휴 정보", onChange }) {
   const navigate = useNavigate();
 
   const handleClick = (tab) => {
-    // 기존 동작 유지
     onChange && onChange(tab);
-    // 라우터 이동 추가
     const to = TAB_ROUTES[tab];
     if (to) navigate(to);
   };
@@ -22,7 +20,13 @@ export default function TopBanner({ activeTab = "제휴 정보", onChange }) {
   return (
     <header className="top-banner">
       <div className="top-banner-inner">
-        <h1 className="top-banner-title">가대제휴</h1>
+        <h1
+          className="top-banner-title"
+          onClick={() => handleClick("제휴 정보")}
+          style={{ cursor: "pointer" }}
+        >
+          가대제휴
+        </h1>
 
         <nav className="top-banner-tabs" aria-label="페이지 탭">
           {TABS.map((tab) => {
