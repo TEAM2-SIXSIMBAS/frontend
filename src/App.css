@@ -48,7 +48,6 @@ body{
 
 /* 페이지 컨테이너: 항상 중앙 + 작은 화면에서 안전하게 줄어들도록 */
 .app__container{
-  /* 320px ~ 881px 사이에서 반응, 좌우 패딩 유지, 큰 화면엔 881px 중앙 정렬 */
   width: clamp(320px, 100vw - calc(var(--page-pad) * 2), var(--container));
   margin-inline: auto;
   padding: 12px var(--page-pad) 56px;

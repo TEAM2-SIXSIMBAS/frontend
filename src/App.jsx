@@ -18,7 +18,7 @@ import "./App.css";
 const random_img = (id) => `https://picsum.photos/400/300?random=${id}`;
 
 // ▼ 드롭다운 옵션
-const ORGANIZATIONS = ["전체", "총학생회", "총동연", "단과대", "학과", "기타"];
+const ORGANIZATIONS = ["전체", "총학", "총동", "단과대", "학과", "기타"];
 const CATEGORIES    = ["전체", "음식", "카페", "생활", "문화"];
 const TYPES         = ["전체", "할인", "서비스"];
 
@@ -43,7 +43,7 @@ const toCard = (dto, idx = 0, offset = 0) => {
     merchant: dto.storeName ?? "",
     tags: [dto.organization, dto.type].filter(Boolean),
     category: dto.category ?? "",
-    img: dto.url || dto.imageUrl || random_img(id),
+    img: dto.partnershipImageUrl || random_img(id),
     hot: false,
   };
 };
@@ -318,7 +318,7 @@ function HomePage() {
             organization: x?.organization,
             category: x?.category,
             type: x?.type,
-            imageUrl: x?.imageUrl,
+            partnershipImageUrl: x?.partnershipImageUrl,
           });
           console.table(listRaw.slice(0, 5).map(pick));
           console.groupEnd();
