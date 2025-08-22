@@ -108,17 +108,30 @@ function MultiSelect({ options, value, onChange, label, ariaLabel }) {
       onChange(["전체"]);
       return;
     }
+
     let next = Array.isArray(value) ? [...value] : [];
     // 전체가 포함돼 있으면 제거
     next = next.filter((v) => v !== "전체");
+
     if (next.includes(opt)) {
       next = next.filter((v) => v !== opt);
     } else {
       next.push(opt);
     }
-    if (next.length === 0) next = ["전체"];
+
+    if (next.length === 0) {
+      next = ["전체"];
+    } else {
+      // 🔹 전체를 제외한 나머지 옵션을 전부 선택했을 때 → 전체로 통일
+      const withoutAll = options.filter((o) => o !== "전체");
+      if (withoutAll.every((o) => next.includes(o))) {
+        next = ["전체"];
+      }
+    }
+
     onChange(next);
   };
+
 
   return (
     <div className="ms">
