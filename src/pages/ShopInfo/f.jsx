@@ -3,8 +3,14 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import TopBanner from '../../components/TopBanner';
 import '../../styles/ShopInfo/ff.css';
 
-/** 서버 기본값 */
-const API_BASE = import.meta.env.VITE_API_BASE ?? 'http://3.134.97.96:8080';
+/** 서버 기본값: .env 없으면 v2 서버로 */
+const API_BASE = (import.meta.env.VITE_API_BASE ?? 'http://13.125.159.81:8080').replace(/\/$/, '');
+
+/** 엔드포인트 후보 생성기: v2 우선, v1 폴백 */
+const buildCandidates = (path) => [
+  `${API_BASE}/v2${path}`,
+  `${API_BASE}${path}`,
+];
 
 /** 화면 옵션 */
 const CATEGORIES = ['전체', '음식', '카페', '생활', '문화'];
@@ -14,7 +20,7 @@ const SORTS = [
   { key: 'parkingDesc', label: '주차 가능 우선' },
 ];
 
-/** 폴백 목업 (isFav는 더는 사용 안 함) */
+/** 폴백 목업 */
 const MOCK_SHOPS = [
   { id: 1,  name: '문과관카페',  category: '카페',  phone: '02-123-4567', email: 'cafe@uni.kr',  address: '가대 문과관 1층', hours: '09:00~19:00', parking: false },
   { id: 2,  name: '홍대이탈리안',  category: '음식',  phone: '02-223-1234', email: 'italy@food.kr', address: '역곡로 12', hours: '11:00~22:00', parking: true },
@@ -28,8 +34,9 @@ const MOCK_SHOPS = [
   { id: 10, name: '충무로카페',    category: '카페',  phone: '02-712-8888', email: 'chung@cafe.kr', address: '충무로 12', hours: '08:30~19:30', parking: false },
 ];
 
-/** 응답 → 공통 스키마로 정규화 (즐겨찾기 제거) */
+/** 응답 → 공통 스키마로 정규화 */
 function normalizeStore(d, i = 0) {
+  // /store-info 예: { storeId, storeName, phoneNumber }
   const id = d.id ?? d._id ?? d.storeId ?? d.partnerId ?? i + 1;
   const name = d.name ?? d.storeName ?? d.partnerName ?? d.title ?? '매장';
   const category = d.category ?? d.categoryName ?? d.type ?? d.tags?.[0] ?? '기타';
@@ -38,68 +45,108 @@ function normalizeStore(d, i = 0) {
   const address = d.address ?? d.addr ?? d.location ?? '';
   const hours = d.hours ?? d.openingHours ?? d.businessHours ?? '';
   const parking = Boolean(
-    d.parking ?? d.hasParking ?? (typeof d.parkingYn === 'string' ? d.parkingYn === 'Y' : false)
+    d.parking ??
+    d.hasParking ??
+    d.parkingAvailable ?? // 제휴 엔드포인트 키
+    (typeof d.parkingYn === 'string' ? d.parkingYn === 'Y' : false)
   );
   return { id, name, category, phone, email, address, hours, parking };
 }
 
-/** 목록 API 유틸 */
-async function fetchStores({ category, sort, q, page, size, signal }) {
+/** /api/partnerships(or /partnerships)에서 확장 필드 가져오기 */
+async function fetchPartnershipsByStores(storeIds, signal) {
+  if (!storeIds?.length) return new Map();
+
   const candidates = [
-    '/api/v1/stores',
-    '/stores',
-    '/api/v1/partnerships',
-    '/partnerships',
-    '/partnership-map',
+    ...buildCandidates(`/api/partnerships?storeIds=${encodeURIComponent(storeIds.join(','))}`),
+    ...buildCandidates(`/api/partnerships`),
+    ...buildCandidates(`/partnerships`),
   ];
 
+  for (const url of candidates) {
+    try {
+      const res = await fetch(url, { signal, headers: { Accept: 'application/json' } });
+      if (!res.ok) continue;
+      const json = await res.json();
+      const items =
+        json.items ?? json.data ?? json.content ?? json.results ?? json.list ?? (Array.isArray(json) ? json : []);
+      if (!Array.isArray(items)) continue;
+
+      // Map<storeId, partnership>
+      const map = new Map();
+      items.forEach(p => {
+        const sid = p.storeId ?? p.id ?? p._id;
+        if (!sid) return;
+        map.set(String(sid), {
+          address: p.address ?? p.addr ?? p.location ?? '',
+          openingHours: p.openingHours ?? p.hours ?? p.businessHours ?? '',
+          parkingAvailable: p.parkingAvailable ?? p.hasParking ?? p.parking ?? false,
+        });
+      });
+      return map;
+    } catch (e) {
+      if (e?.name === 'AbortError' || String(e?.message).includes('aborted')) throw e;
+    }
+  }
+  return new Map();
+}
+
+/** 목록 API: /store-info + (병합) /api/partnerships */
+async function fetchStores({ category, sort, q, page, size, signal }) {
   const qs = new URLSearchParams({
+    page: String(page ?? 1),
+    size: String(size ?? 10),
+    // 선택적 파라미터
     category: category === '전체' ? '' : category,
     sort,
     q: q ?? '',
-    page: String(page ?? 1),
-    size: String(size ?? 10),
-
-    // 대체 키들(백엔드 케이스 다양성 대응)
     keyword: q ?? '',
     pageIndex: String(page ?? 1),
     pageSize: String(size ?? 10),
     order: sort,
   });
 
-  for (const path of candidates) {
+  const candidates = buildCandidates(`/store-info?${qs}`);
+
+  let json = null;
+  for (const url of candidates) {
     try {
-      const res = await fetch(`${API_BASE.replace(/\/$/, '')}${path}?${qs}`, {
-        signal,
-        headers: { Accept: 'application/json' },
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = await res.json();
-
-      const items =
-        json.items ??
-        json.data ??
-        json.content ??
-        json.results ??
-        (Array.isArray(json) ? json : []);
-
-      if (!Array.isArray(items)) continue;
-
-      const list = items.map((d, i) => normalizeStore(d, i));
-      const total = json.total ?? json.totalElements ?? json.count ?? list.length;
-      return { list, total };
+      const res = await fetch(url, { signal, headers: { Accept: 'application/json' } });
+      if (!res.ok) continue;
+      json = await res.json();
+      break;
     } catch (e) {
-      // 사용자가 필터/검색/페이지를 바꾸면 이전 요청은 Abort됩니다 → 그대로 상위로 전달
-      if (e?.name === 'AbortError' || String(e?.message).includes('aborted')) {
-        throw e;
-      }
-      // 그 외엔 다음 후보 경로 시도
+      if (e?.name === 'AbortError' || String(e?.message).includes('aborted')) throw e;
     }
   }
-  throw new Error('No matching endpoint');
+  if (!json) throw new Error('모든 목록 엔드포인트 실패');
+
+  const rawItems = json.list ?? json.items ?? json.data ?? [];
+  const total = json.pageAmount ?? json.total ?? json.totalElements ?? rawItems.length;
+
+  // 2) 제휴 정보 병합 시도
+  const storeIds = rawItems.map(d => String(d.storeId ?? d.id ?? d._id)).filter(Boolean);
+  const partMap = await fetchPartnershipsByStores(storeIds, signal); // Map<storeId, {address, openingHours, parkingAvailable}>
+
+  // 3) 병합 → 정규화
+  const list = rawItems.map((d, i) => {
+    const sid = String(d.storeId ?? d.id ?? d._id ?? '');
+    const p = partMap.get(sid) || {};
+    return normalizeStore(
+      {
+        ...d,
+        address: d.address ?? p.address,
+        openingHours: d.openingHours ?? p.openingHours,
+        parkingAvailable: d.parkingAvailable ?? p.parkingAvailable,
+      },
+      i
+    );
+  });
+
+  return { list, total };
 }
 
-/** 카드 (즐겨찾기 버튼 삭제) */
+/** 카드 */
 function ShopInfoCard({ shop }) {
   return (
     <article className="shop-card" role="article" aria-labelledby={`shop-${shop.id}-title`}>
@@ -175,17 +222,12 @@ export default function ShopInfo() {
           setTotal(total);
         }
       } catch (e) {
-        // 요청 취소는 정상 동작이므로 에러로 보여주지 않음
-        if (e?.name === 'AbortError' || String(e?.message).includes('aborted')) {
-          return;
-        }
+        if (e?.name === 'AbortError' || String(e?.message).includes('aborted')) return;
         setError('서버 데이터를 불러오지 못해 임시 데이터로 표시합니다.');
         setData(MOCK_SHOPS);
         setTotal(MOCK_SHOPS.length);
       } finally {
-        if (!controller.signal.aborted) {
-          setLoading(false);
-        }
+        if (!controller.signal.aborted) setLoading(false);
       }
     };
 
@@ -194,7 +236,7 @@ export default function ShopInfo() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category, sort, keyword, page]);
 
-  // 클라이언트 보정 정렬/필터 (즐겨찾기 제거됨)
+  // 클라이언트 보정 정렬/필터
   const filtered = useMemo(() => {
     let list = data;
     if (category !== '전체') list = list.filter((s) => s.category === category);
