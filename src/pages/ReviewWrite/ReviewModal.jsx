@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import "../../styles/ReviewWrite/ReviewModal.css";
 
-// ✅ .env에 선언된 VITE_API_BASE 사용
 const API_BASE = import.meta.env.VITE_API_BASE;
 
 export default function ReviewModal({ onClose, partnershipId }) {
@@ -21,7 +20,6 @@ export default function ReviewModal({ onClose, partnershipId }) {
   const receiptInputRef = useRef(null);
   const reviewInputRefs = useRef([]);
 
-  // ✅ 모달이 열릴 때 부모에서 받은 partnershipId 확인 로그
   useEffect(() => {
     console.log("[ReviewModal] OPEN - partnershipId (from parent) =", partnershipId);
   }, [partnershipId]);
@@ -123,7 +121,6 @@ export default function ReviewModal({ onClose, partnershipId }) {
     try {
       setSubmitting(true);
 
-      // 서버 명세에 맞춘 키 이름: text / receiptFile / photoFiles
       const fd = new FormData();
       fd.append("text", content); // 리뷰 본문
       fd.append("receiptFile", receipt.file); // 영수증 1장 (필수)
@@ -131,7 +128,6 @@ export default function ReviewModal({ onClose, partnershipId }) {
         fd.append("photoFiles", r.file); // 리뷰 사진 N장
       });
 
-      // ✅ API_BASE 붙여서 절대 URL 생성
       const postPath = `/partnership-info/detail/${encodeURIComponent(partnershipId)}/review/post`;
       const postUrl = `${API_BASE}${postPath}`;
       console.log("[ReviewModal] SUBMIT - POST URL =", postUrl);

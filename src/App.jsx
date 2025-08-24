@@ -45,16 +45,18 @@ const SORTS = [
    - 서버 DTO: { id?, content, storeName, organization, category, type, imageUrl? }
    ========================================================= */
 const toCard = (dto, idx = 0, offset = 0) => {
-  const id = dto.id ?? offset + idx + 1;
+  // partnershipId가 있으면 최우선, 없으면 dto.id, 그래도 없으면 fallback
+  const id = dto.partnershipId
 
   const imgUrl = dto.partnershipImageUrl
     ? `${API_BASE}${dto.partnershipImageUrl}`
     : random_img(id);
 
-  console.log("[toCard IMG]", dto.partnershipImageUrl, "->", imgUrl);
+  // (선택) 디버깅: 어떤 id가 매핑됐는지 확인하고 싶다면 주석 해제
+  console.log("[toCard] dto.partnershipId =", dto.partnershipId, "dto.id =", dto.id, "=> id =", id);
 
   return {
-    id,
+    id, // ← 라우팅에 쓰이는 값 (to={`/info/${item.id}`})
     title: dto.content ?? "",
     merchant: dto.storeName ?? "",
     tags: [dto.organization, dto.type].filter(Boolean),
@@ -63,6 +65,7 @@ const toCard = (dto, idx = 0, offset = 0) => {
     hot: false,
   };
 };
+
 
 // "전체" → 빈 문자열, 배열 선택값은 콤마로 합치기
 const encodeMultiParam = (arr) => {
@@ -342,6 +345,7 @@ function HomePage() {
           });
           console.log("[ALL] pageAmount =", pageAmount);
           const pick = (x) => ({
+            partnershipId: x?.partnershipId,
             content: x?.content,
             storeName: x?.storeName,
             organization: x?.organization,
