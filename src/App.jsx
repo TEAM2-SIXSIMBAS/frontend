@@ -14,6 +14,8 @@ import "./App.css";
      /partnership-info?organization=a,b,c&category=x,y&type=m,n&sort={정렬}&page={페이지}
    ========================================================= */
 
+const API_BASE = import.meta.env.VITE_API_BASE ?? "";
+
 // fallback용 임시 썸네일 (DTO에 imageUrl 없을 때만 사용)
 const random_img = (id) => `https://picsum.photos/400/300?random=${id}`;
 
@@ -22,13 +24,20 @@ const ORGANIZATIONS = ["전체", "총학", "총동", "단과대", "학과", "기
 const CATEGORIES    = ["전체", "음식", "카페", "생활", "문화"];
 const TYPES         = ["전체", "할인", "서비스"];
 
+// const SORTS = [
+//   { key: "idAsc", label: "등록순" },
+//   { key: "popular", label: "조회수 높은 순" },
+//   { key: "discountDesc", label: "할인율 높은 순" },
+//   { key: "discountAsc", label: "할인율 낮은 순" },
+//   { key: "deadlineAsc", label: "기한 빠른 순" },
+//   { key: "deadlineDesc", label: "기한 느린 순" },
+// ];
+
 const SORTS = [
-  { key: "idAsc", label: "등록순" },
-  { key: "popular", label: "조회수 높은 순" },
-  { key: "discountDesc", label: "할인율 높은 순" },
-  { key: "discountAsc", label: "할인율 낮은 순" },
-  { key: "deadlineAsc", label: "기한 빠른 순" },
-  { key: "deadlineDesc", label: "기한 느린 순" },
+  { key: "views", label: "조회수 높은 순" },
+  { key: "discountRate", label: "할인율 높은 순" },
+  { key: "saleStartDate", label: "시작일 빠른 순" },
+  { key: "saleEndDate", label: "종료일 빠른 순" },
 ];
 
 /* =========================================================
@@ -37,13 +46,20 @@ const SORTS = [
    ========================================================= */
 const toCard = (dto, idx = 0, offset = 0) => {
   const id = dto.id ?? offset + idx + 1;
+
+  const imgUrl = dto.partnershipImageUrl
+    ? `${API_BASE}${dto.partnershipImageUrl}`
+    : random_img(id);
+
+  console.log("[toCard IMG]", dto.partnershipImageUrl, "->", imgUrl);
+
   return {
     id,
     title: dto.content ?? "",
     merchant: dto.storeName ?? "",
     tags: [dto.organization, dto.type].filter(Boolean),
     category: dto.category ?? "",
-    img: dto.partnershipImageUrl || random_img(id),
+    img: imgUrl,
     hot: false,
   };
 };
@@ -264,7 +280,7 @@ function HomePage() {
   const [top3, setTop3] = useState([]);
   const [allList, setAll] = useState([]);
 
-  const API_BASE = import.meta.env.VITE_API_BASE ?? "";
+  // const API_BASE = import.meta.env.VITE_API_BASE ?? "";
   const USE_MOCK = false;
 
   // 서버 호출

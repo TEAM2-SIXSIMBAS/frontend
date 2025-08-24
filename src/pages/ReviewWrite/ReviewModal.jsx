@@ -2,6 +2,9 @@ import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import "../../styles/ReviewWrite/ReviewModal.css";
 
+// ✅ .env에 선언된 VITE_API_BASE 사용
+const API_BASE = import.meta.env.VITE_API_BASE;
+
 export default function ReviewModal({ onClose, partnershipId }) {
   const modalRef = useRef(null);
   const firstFocusableRef = useRef(null);
@@ -128,7 +131,9 @@ export default function ReviewModal({ onClose, partnershipId }) {
         fd.append("photoFiles", r.file); // 리뷰 사진 N장
       });
 
-      const postUrl = `/partnership-info/detail/${encodeURIComponent(partnershipId)}/review/post`;
+      // ✅ API_BASE 붙여서 절대 URL 생성
+      const postPath = `/partnership-info/detail/${encodeURIComponent(partnershipId)}/review/post`;
+      const postUrl = `${API_BASE}${postPath}`;
       console.log("[ReviewModal] SUBMIT - POST URL =", postUrl);
 
       const res = await fetch(postUrl, {
