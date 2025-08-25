@@ -21,6 +21,7 @@ function normalizeStore(d) {
 /** API 호출 */
 async function fetchStores({page, signal }) {
   const url = `${API_BASE}/store-info?page=${page}`;
+  console.log("url입니다" + url);
   const res = await fetch(url, { signal, headers: { Accept: 'application/json' } });
   if (!res.ok) throw new Error(`불러오기 실패 (${res.status})`);
   const json = await res.json();
@@ -84,7 +85,6 @@ export default function ShopInfo() {
           page,
           signal: controller.signal,
         });
-        console.log("url입니다" + url);
         setData(list);
         setPageAmount(pageAmount);
       } catch (e) {
