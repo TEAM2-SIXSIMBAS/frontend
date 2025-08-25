@@ -1,32 +1,33 @@
-// src/pages/ShopInfo/f.jsx  (상세 전용)
-import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState, useMemo } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import TopBanner from '../../components/TopBanner';
 import '../../styles/ShopInfo/ff.css';
 
-/** 서버 기본값 */
 const API_BASE = (import.meta.env.VITE_API_BASE ?? 'http://13.125.159.81:8080').replace(/\/$/, '');
 
-/** 응답 → 정확 스키마 정규화 (요구한 키만 사용) */
-function normalizeStore(d, fallbackId = 0) {
+/** 응답 정규화 */
+function normalizeStore(d) {
   return {
-    id: d.storeId ?? fallbackId,
-    name: d.storeName ?? '매장',
-    // NOTE: 스펙이 대문자 Number 로 온다고 명시됨 → 그 키만 신뢰
-    phone: d.Number != null ? String(d.Number) : '',
+    id: d.storeId,
+    name: d.storeName,
+    phone: d.phoneNumber ? String(d.phoneNumber) : '',
     email: d.email ?? '',
     address: d.address ?? '',
-    hours: d.openTime && d.closeTime ? `${d.openTime} ~ ${d.closeTime}` : '',
+    hours: d.startTime && d.endTime ? `${d.startTime} ~ ${d.endTime}` : '',
+    parking: d.parkingAvailable === '가능',
   };
 }
 
-/** 상세 API 호출: GET /store-info/{storeId} */
-async function fetchStoreDetail(storeId, signal) {
-  const url = `${API_BASE}/store-info/${storeId}`;
+/** API 호출 */
+async function fetchStores({ storeId, page, signal }) {
+  const url = `${API_BASE}/store-info/${storeId}?page=${page}`;
   const res = await fetch(url, { signal, headers: { Accept: 'application/json' } });
-  if (!res.ok) throw new Error(`상세 실패(${res.status}) /store-info/${storeId}`);
+  if (!res.ok) throw new Error(`불러오기 실패 (${res.status})`);
   const json = await res.json();
-  return normalizeStore(json, storeId);
+
+  const list = (json.storeList ?? []).map(normalizeStore);
+  const pageAmount = json.pageAmount ?? 1;
+  return { list, pageAmount };
 }
 
 /** 카드 */
@@ -44,6 +45,7 @@ function ShopInfoCard({ shop }) {
           <dt>이메일</dt><dd>{shop.email || '-'}</dd>
           <dt>주소</dt><dd>{shop.address || '-'}</dd>
           <dt>운영시간</dt><dd>{shop.hours || '-'}</dd>
+          <dt>주차여부</dt><dd>{shop.parking ? '가능' : '불가능'}</dd>
         </dl>
       </div>
     </article>
@@ -52,43 +54,58 @@ function ShopInfoCard({ shop }) {
 
 export default function ShopInfo() {
   const navigate = useNavigate();
-  const { storeId } = useParams(); // 라우트: /store/:storeId 같은 형태 가정
-  const [shop, setShop] = useState(null);
+  const { storeId } = useParams();
+  const [sp, setSp] = useSearchParams();
+
+  const [page, setPage] = useState(Number(sp.get('page') || 1));
+  const [data, setData] = useState([]);
+  const [pageAmount, setPageAmount] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const changeTab = (tab) => {
-    const t = String(tab);
-    if (t.includes('제휴') && t.includes('정보')) return navigate('/');
-    if (t.includes('지도')) return navigate('/map');
-    return navigate('/partners');
+  const syncQuery = (next = {}) => {
+    const params = new URLSearchParams(sp);
+    Object.entries(next).forEach(([k, v]) => {
+      if (!v) params.delete(k);
+      else params.set(k, String(v));
+    });
+    setSp(params, { replace: true });
   };
 
   useEffect(() => {
-    if (!storeId) {
-      setError('storeId가 필요합니다.');
-      return;
-    }
+    if (!storeId) return;
     const controller = new AbortController();
     (async () => {
       setLoading(true);
       setError('');
       try {
-        const data = await fetchStoreDetail(storeId, controller.signal);
-        if (!controller.signal.aborted) setShop(data);
+        const { list, pageAmount } = await fetchStores({
+          storeId,
+          page,
+          signal: controller.signal,
+        });
+        setData(list);
+        setPageAmount(pageAmount);
       } catch (e) {
-        if (e && e.name === 'AbortError') return;
+        if (e.name === 'AbortError') return;
         setError(String(e.message || '불러오기 실패'));
       } finally {
-        if (!controller.signal.aborted) setLoading(false);
+        setLoading(false);
       }
     })();
     return () => controller.abort();
-  }, [storeId]);
+  }, [storeId, page]);
+
+  const changePage = (p) => {
+    if (p < 1 || p > pageAmount) return;
+    setPage(p);
+    syncQuery({ page: p });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <div className="app__container">
-      <TopBanner activeTab={'제휴사 정보'} onChange={changeTab} />
+      <TopBanner activeTab={'제휴사 정보'} onChange={() => navigate('/partners')} />
       <main className="section shop">
         <div className="section__head shop__head">
           <h2 className="section__title shop__title">가게 정보</h2>
@@ -96,15 +113,33 @@ export default function ShopInfo() {
 
         {loading && <p className="hint">불러오는 중…</p>}
         {!!error && <p className="hint hint--warn">{error}</p>}
-        {shop && (
-          <div className="shop-grid">
-            <ShopInfoCard shop={shop} />
-          </div>
-        )}
 
-        <div style={{ marginTop: '16px' }}>
-          <button className="pagination__btn" onClick={() => navigate(-1)}>뒤로</button>
+        <div className="shop-grid">
+          {data.map((shop) => (
+            <ShopInfoCard key={shop.id} shop={shop} />
+          ))}
+          {!loading && data.length === 0 && (
+            <p className="hint">가게 정보가 없습니다.</p>
+          )}
         </div>
+
+        <nav className="pagination" aria-label="페이지네이션">
+          <button onClick={() => changePage(page - 1)} disabled={page === 1}>
+            이전
+          </button>
+          {Array.from({ length: pageAmount }, (_, i) => i + 1).map((p) => (
+            <button
+              key={p}
+              className={`pagination__num ${p === page ? 'is-active' : ''}`}
+              onClick={() => changePage(p)}
+            >
+              {p}
+            </button>
+          ))}
+          <button onClick={() => changePage(page + 1)} disabled={page === pageAmount}>
+            다음
+          </button>
+        </nav>
       </main>
     </div>
   );
