@@ -209,7 +209,7 @@ function HomePage() {
   const [categories, setCategories] = useState(["전체"]);
   const [types,   setTypes] = useState(["전체"]);
 
-  const [sort, setSort] = useState("idAsc");
+  const [sort, setSort] = useState("views");
   const [page, setPage] = useState(1); // 1 기반
   const [pageCount, setPageCount] = useState(1);
 
