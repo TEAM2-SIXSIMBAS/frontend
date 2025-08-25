@@ -10,16 +10,16 @@ function normalizeStore(d) {
   return {
     id: d.storeId,
     name: d.storeName,
-    phone: d.phoneNumber ? String(d.phoneNumber) : '',
-    email: d.email ?? '',
-    address: d.address ?? '',
+    phone: d.phoneNumber,
+    email: d.email,
+    address: d.address,
     hours: d.startTime && d.endTime ? `${d.startTime} ~ ${d.endTime}` : '',
     parking: d.parkingAvailable === '가능',
   };
 }
 
 /** API 호출 */
-async function fetchStores({ storeId, page, signal }) {
+async function fetchStores({page, signal }) {
   const url = `${API_BASE}/store-info?page=${page}`;
   const res = await fetch(url, { signal, headers: { Accept: 'application/json' } });
   if (!res.ok) throw new Error(`불러오기 실패 (${res.status})`);
@@ -84,6 +84,7 @@ export default function ShopInfo() {
           page,
           signal: controller.signal,
         });
+        console.log("url입니다" + url);
         setData(list);
         setPageAmount(pageAmount);
       } catch (e) {
