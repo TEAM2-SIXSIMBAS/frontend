@@ -35,15 +35,13 @@ const SORTS = [
    DTO -> 카드 props 매핑
    - 서버 DTO: { id?, content, storeName, organization, category, type, imageUrl? }
    ========================================================= */
-
 const toCard = (dto, idx = 0, offset = 0) => {
-  const id = dto.partnershipId
+  const id = dto.partnershipId;
 
   const imgUrl = dto.partnershipImageUrl
     ? `${API_BASE}${dto.partnershipImageUrl}`
     : random_img(id);
 
-  // 어떤 id가 매핑됐는지 확인
   console.log("[toCard] dto.partnershipId =", dto.partnershipId, "dto.id =", dto.id, "=> id =", id);
 
   return {
@@ -57,54 +55,32 @@ const toCard = (dto, idx = 0, offset = 0) => {
   };
 };
 
-
 // "전체" → 빈 문자열, 배열 선택값은 콤마로 합치기
 const encodeMultiParam = (arr) => {
   if (!arr || arr.length === 0 || arr.includes("전체")) return "";
   return arr.join(",");
 };
-
 const isAllSelected = (arr) => !arr || arr.length === 0 || arr.includes("전체");
 
 /* =========================================================
-   커스텀 멀티셀렉트 (정렬 드롭다운처럼 보이는 UI)
-   - props:
-     options: string[]
-     value: string[]          // ["전체"] 또는 ["음식","카페"] 등
-     onChange(next: string[]) // 제어 컴포넌트
-     label: string            // 버튼 placeholder (예: "기관")
-   - 특징:
-     • "전체" 선택 시 나머지 해제
-     • 모두 해제되면 자동으로 ["전체"]
-     • 버튼 라벨: "전체" 또는 "N개 선택"
-     • 키보드: Enter/Space 열기/체크, Esc 닫기, Tab 포커스 이동
+   커스텀 멀티셀렉트
    ========================================================= */
 function MultiSelect({ options, value, onChange, label, ariaLabel }) {
   const [open, setOpen] = useState(false);
   const btnRef = useRef(null);
   const menuRef = useRef(null);
 
-  const displayText = isAllSelected(value)
-    ? "전체"
-    : `${value.length}개 선택`;
-
+  const displayText = isAllSelected(value) ? "전체" : `${value.length}개 선택`;
   const toggleOpen = () => setOpen((v) => !v);
-  const close = () => setOpen(false);
 
-  // 외부 클릭 닫기
   useEffect(() => {
     if (!open) return;
     const onDocClick = (e) => {
       if (!menuRef.current && !btnRef.current) return;
-      if (
-        menuRef.current?.contains(e.target) ||
-        btnRef.current?.contains(e.target)
-      ) return;
+      if (menuRef.current?.contains(e.target) || btnRef.current?.contains(e.target)) return;
       setOpen(false);
     };
-    const onEsc = (e) => {
-      if (e.key === "Escape") setOpen(false);
-    };
+    const onEsc = (e) => { if (e.key === "Escape") setOpen(false); };
     document.addEventListener("mousedown", onDocClick);
     document.addEventListener("keydown", onEsc);
     return () => {
@@ -114,34 +90,17 @@ function MultiSelect({ options, value, onChange, label, ariaLabel }) {
   }, [open]);
 
   const handleToggle = (opt) => {
-    if (opt === "전체") {
-      onChange(["전체"]);
-      return;
-    }
-
+    if (opt === "전체") { onChange(["전체"]); return; }
     let next = Array.isArray(value) ? [...value] : [];
-    // 전체가 포함돼 있으면 제거
     next = next.filter((v) => v !== "전체");
-
-    if (next.includes(opt)) {
-      next = next.filter((v) => v !== opt);
-    } else {
-      next.push(opt);
-    }
-
-    if (next.length === 0) {
-      next = ["전체"];
-    } else {
-      // 🔹 전체를 제외한 나머지 옵션을 전부 선택했을 때 → 전체로 통일
+    next = next.includes(opt) ? next.filter((v) => v !== opt) : [...next, opt];
+    if (next.length === 0) next = ["전체"];
+    else {
       const withoutAll = options.filter((o) => o !== "전체");
-      if (withoutAll.every((o) => next.includes(o))) {
-        next = ["전체"];
-      }
+      if (withoutAll.every((o) => next.includes(o))) next = ["전체"];
     }
-
     onChange(next);
   };
-
 
   return (
     <div className="ms">
@@ -160,24 +119,13 @@ function MultiSelect({ options, value, onChange, label, ariaLabel }) {
       </button>
 
       {open && (
-        <div
-          ref={menuRef}
-          className="ms__menu"
-          role="listbox"
-          aria-multiselectable="true"
-        >
+        <div ref={menuRef} className="ms__menu" role="listbox" aria-multiselectable="true">
           {options.map((opt) => {
             const checked =
-              opt === "전체"
-                ? isAllSelected(value)
-                : Array.isArray(value) && value.includes(opt);
+              opt === "전체" ? isAllSelected(value) : Array.isArray(value) && value.includes(opt);
             return (
               <label key={opt} className="ms__option" role="option" aria-selected={checked}>
-                <input
-                  type="checkbox"
-                  checked={checked}
-                  onChange={() => handleToggle(opt)}
-                />
+                <input type="checkbox" checked={checked} onChange={() => handleToggle(opt)} />
                 <span>{opt}</span>
               </label>
             );
@@ -195,7 +143,6 @@ function SingleSelect({ options, value, onChange, label, ariaLabel }) {
 
   const current = options.find((o) => o.key === value);
   const displayText = current ? current.label : "";
-
   const toggleOpen = () => setOpen((v) => !v);
 
   useEffect(() => {
@@ -233,12 +180,7 @@ function SingleSelect({ options, value, onChange, label, ariaLabel }) {
       </button>
 
       {open && (
-        <div
-          ref={menuRef}
-          className="ms__menu"
-          role="listbox"
-          aria-multiselectable="false"
-        >
+        <div ref={menuRef} className="ms__menu" role="listbox" aria-multiselectable="false">
           {options.map((opt) => {
             const checked = opt.key === value;
             return (
@@ -262,10 +204,10 @@ function SingleSelect({ options, value, onChange, label, ariaLabel }) {
 function HomePage() {
   const [activeTab, setActiveTab] = useState("제휴 정보");
 
-  // 🔹 멀티셀렉트 상태
-  const [organizations, setOrganizations] = useState(["전체"]); // ORGANIZATION(기관)
-  const [categories, setCategories] = useState(["전체"]); // CATEGORY(업종)
-  const [types, setTypes] = useState(["전체"]); // TYPE(혜택)
+  // 멀티셀렉트 상태
+  const [organizations, setOrganizations] = useState(["전체"]);
+  const [categories, setCategories] = useState(["전체"]);
+  const [types,   setTypes] = useState(["전체"]);
 
   const [sort, setSort] = useState("idAsc");
   const [page, setPage] = useState(1); // 1 기반
@@ -274,7 +216,6 @@ function HomePage() {
   const [top3, setTop3] = useState([]);
   const [allList, setAll] = useState([]);
 
-  // const API_BASE = import.meta.env.VITE_API_BASE ?? "";
   const USE_MOCK = false;
 
   // 서버 호출
@@ -296,9 +237,7 @@ function HomePage() {
       isAllSelected(categories) &&
       isAllSelected(types);
     const time = new Date().toLocaleTimeString();
-    if (allAll) {
-      console.groupCollapsed(`[ALL][${time}] ${url}`);
-    }
+    if (allAll) console.groupCollapsed(`[ALL][${time}] ${url}`);
 
     fetch(url, {
       headers: { Accept: "application/json" },
@@ -306,16 +245,14 @@ function HomePage() {
     })
       .then(async (res) => {
         const raw = await res.clone().text().catch(() => "");
-
         if (!res.ok) {
           if (allAll) console.groupEnd();
           throw new Error(`HTTP ${res.status}`);
         }
 
         let json = {};
-        try {
-          json = raw ? JSON.parse(raw) : {};
-        } catch (e) {
+        try { json = raw ? JSON.parse(raw) : {}; }
+        catch (e) {
           if (allAll) {
             console.error("[ALL] JSON parse error:", e);
             console.log("[ALL] raw(문자열) =", raw.slice(0, 300));
@@ -324,7 +261,6 @@ function HomePage() {
           throw e;
         }
 
-        // 서버 스키마: { top3: [], sort: [], pageAmount: number }
         const listRaw    = Array.isArray(json.sort) ? json.sort : [];
         const pageAmount = Math.max(1, Number(json.pageAmount) || 1);
 
@@ -369,14 +305,11 @@ function HomePage() {
     return () => controller.abort();
   }, [organizations, categories, types, sort, page, API_BASE, USE_MOCK]);
 
-  // 페이지 변경: page만 변경 (필터/정렬은 유지)
   const changePage = (p) => {
     if (p < 1 || p > pageCount) return;
     setPage(p);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-
-  // 필터 변경 시 page=1
   const resetToFirstPage = () => setPage(1);
 
   return (
@@ -396,6 +329,7 @@ function HomePage() {
                   key={`top-${item.id}-${i}`}
                   item={item}
                   to={`/info/${item.id}`}
+                  state={{ storeName: item.merchant, benefit: item.title }}
                 />
               ))}
             </div>
@@ -407,7 +341,6 @@ function HomePage() {
               <h3 className="section__title">제휴 정보</h3>
 
               <div className="controls controls--flex">
-                {/* 🔹 기관 */}
                 <MultiSelect
                   options={ORGANIZATIONS}
                   value={organizations}
@@ -415,8 +348,6 @@ function HomePage() {
                   label="기관"
                   ariaLabel="기관 필터"
                 />
-
-                {/* 🔹 업종 */}
                 <MultiSelect
                   options={CATEGORIES}
                   value={categories}
@@ -424,8 +355,6 @@ function HomePage() {
                   label="업종"
                   ariaLabel="업종 필터"
                 />
-
-                {/* 🔹 혜택 */}
                 <MultiSelect
                   options={TYPES}
                   value={types}
@@ -433,14 +362,12 @@ function HomePage() {
                   label="혜택"
                   ariaLabel="혜택 필터"
                 />
-
-                {/* 정렬 (단일 네이티브 셀렉트 유지) */}
                 <SingleSelect
-                    options={SORTS}
-                    value={sort}
-                    onChange={(next) => { setSort(next); setPage(1); }}
-                    label="정렬"
-                    ariaLabel="정렬 기준"
+                  options={SORTS}
+                  value={sort}
+                  onChange={(next) => { setSort(next); setPage(1); }}
+                  label="정렬"
+                  ariaLabel="정렬 기준"
                 />
               </div>
             </div>
@@ -451,6 +378,7 @@ function HomePage() {
                   key={`list-${item.id}-${i}`}
                   item={item}
                   to={`/info/${item.id}`}
+                  state={{ storeName: item.merchant, benefit: item.title }}
                 />
               ))}
             </div>
@@ -488,14 +416,14 @@ function HomePage() {
 }
 
 export default function App() {
-    return (
-        <BrowserRouter>
-            <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/info/:partnershipId" element={<OceanWorld />} />
-                <Route path="/map" element={<InfoMap />} />
-                <Route path="/partners" element={<ShopInfo />} />
-            </Routes>
-        </BrowserRouter>
-    );
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/info/:partnershipId" element={<OceanWorld />} />
+        <Route path="/map" element={<InfoMap />} />
+        <Route path="/partners" element={<ShopInfo />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
