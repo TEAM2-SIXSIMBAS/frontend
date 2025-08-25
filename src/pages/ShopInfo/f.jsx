@@ -1,5 +1,5 @@
-import { useEffect, useState, useMemo } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import TopBanner from '../../components/TopBanner';
 import '../../styles/ShopInfo/ff.css';
 
@@ -18,16 +18,16 @@ function normalizeStore(d) {
   };
 }
 
-/** API 호출 */
-async function fetchStores({page, signal }) {
+/** 목록 API 호출: GET /store-info?page={n} */
+async function fetchStores({ page, signal }) {
   const url = `${API_BASE}/store-info?page=${page}`;
-  console.log("url입니다" + url);
+  console.log('[FETCH]', url); // ← 이제 반드시 찍힘
   const res = await fetch(url, { signal, headers: { Accept: 'application/json' } });
   if (!res.ok) throw new Error(`불러오기 실패 (${res.status})`);
   const json = await res.json();
 
   const list = (json.storeList ?? []).map(normalizeStore);
-  const pageAmount = json.pageAmount ?? 1;
+  const pageAmount = json.pageAmount ?? 1; // 전체 페이지 수
   return { list, pageAmount };
 }
 
@@ -55,7 +55,6 @@ function ShopInfoCard({ shop }) {
 
 export default function ShopInfo() {
   const navigate = useNavigate();
-  const { storeId } = useParams();
   const [sp, setSp] = useSearchParams();
 
   const [page, setPage] = useState(Number(sp.get('page') || 1));
@@ -74,14 +73,12 @@ export default function ShopInfo() {
   };
 
   useEffect(() => {
-    if (!storeId) return;
     const controller = new AbortController();
     (async () => {
       setLoading(true);
       setError('');
       try {
         const { list, pageAmount } = await fetchStores({
-          storeId,
           page,
           signal: controller.signal,
         });
@@ -95,7 +92,7 @@ export default function ShopInfo() {
       }
     })();
     return () => controller.abort();
-  }, [storeId, page]);
+  }, [page]); // ← storeId 의존성 제거
 
   const changePage = (p) => {
     if (p < 1 || p > pageAmount) return;
@@ -119,9 +116,7 @@ export default function ShopInfo() {
           {data.map((shop) => (
             <ShopInfoCard key={shop.id} shop={shop} />
           ))}
-          {!loading && data.length === 0 && (
-            <p className="hint">가게 정보가 없습니다.</p>
-          )}
+          {!loading && data.length === 0 && <p className="hint">가게 정보가 없습니다.</p>}
         </div>
 
         <nav className="pagination" aria-label="페이지네이션">
