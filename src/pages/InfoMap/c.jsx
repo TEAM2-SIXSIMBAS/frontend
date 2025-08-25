@@ -41,12 +41,12 @@ function normalizeItem(d) {
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
 
   // id 우선순위: storeId > id > _id > 좌표
-  const id = d.storeId ?? d.id ?? d._id ?? `${lat},${lng}`;
+  const id = d.storeId ?? d.id ?? d._id ?? d.storeName ?? `${lat},${lng}`;
 
   return {
     id,
     storeId: d.storeId ?? d.id ?? d._id ?? id,
-    name: d.name ?? d.title ?? '매장',
+    name: d.name ?? d.title ?? d.storeName ?? '매장',
     lat,
     lng,
     address: d.address ?? d.roadAddress ?? d.addr ?? '',
