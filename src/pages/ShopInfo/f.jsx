@@ -20,7 +20,7 @@ function normalizeStore(d) {
 
 /** API 호출 */
 async function fetchStores({ storeId, page, signal }) {
-  const url = `${API_BASE}/store-info/${storeId}?page=${page}`;
+  const url = `${API_BASE}/store-info?page=${page}`;
   const res = await fetch(url, { signal, headers: { Accept: 'application/json' } });
   if (!res.ok) throw new Error(`불러오기 실패 (${res.status})`);
   const json = await res.json();
