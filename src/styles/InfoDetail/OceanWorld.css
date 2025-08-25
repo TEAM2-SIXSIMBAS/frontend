@@ -6,7 +6,6 @@
 }
 
 /* 상세 카드 */
-/* 상세 카드 */
 .detail-card {
     background-color: rgb(255, 255, 255);
     border-radius: 12px;
@@ -14,8 +13,7 @@
     max-width: 800px;
     margin: auto;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    /* max-height: 700px;  <-- 제거 */
-    max-height: none;        /* ✅ 높이 제한 해제 (내용만큼 확장) */
+    max-height: none;
 }
 
 .store-name {
@@ -81,7 +79,8 @@
 }
 
 .review-write-btn {
-    margin-top: 15px;
+    margin: 15px auto;
+    display: block;
     padding: 10px 16px;
     background-color: #4a4fa6;
     color: white;
@@ -97,7 +96,7 @@
     background-color: #3a3f96;
 }
 
-/* 리뷰 아이템 카드 */
+
 .review-item {
     background-color: #fff;
     border-radius: 5px;
@@ -107,26 +106,23 @@
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
 
-/* 리뷰 사진 묶음 */
+
 .review-photos {
     display: flex;
     gap: 8px;
     margin-top: 8px;
-    flex-wrap: nowrap;        /* 최대 3장만, 줄바꿈 안 함 */
+    flex-wrap: nowrap;
     justify-content: flex-start;
 }
 
-/* 리뷰 사진 */
 .review-photo {
     width: 120px;
     height: 120px;
     object-fit: cover;
     border-radius: 4px;
     border: 1px solid #e6ecf7;
-    flex-shrink: 0;           /* 줄어들지 않게 고정 */
+    flex-shrink: 0;
 }
-
-/* ========== AI 요약 타이틀 + 카드 ========== */
 
 .review-list-title {
   margin: 20px 0 12px;
@@ -136,29 +132,25 @@
   text-align: left;
 }
 
-/* 블록 전체 여백 */
 .review-summary-block { 
   margin: 12px 0 16px; 
 }
 
-/* 위쪽 라벨 줄 (🤖 + AI 요약) */
 .review-summary-head {
   display: flex;
   align-items: center;
   gap: 6px;
   margin-bottom: 8px;
-  font-size: 16px;       /* 👈 리뷰 제목과 동일하게 */
-  font-weight: bold;     /* 굵기 맞춤 */
+  font-size: 16px;
+  font-weight: bold;
   color: var(--ink-700, #23324D);
 }
 
-/* 이모지 크기만 살짝 키움 */
 .review-summary-emoji { 
   font-size: 18px; 
   line-height: 1; 
 }
 
-/* 흰색 네모 카드 (본문) */
 .review-summary-card {
   background: #fff;
   border-radius: 5px;
@@ -169,7 +161,6 @@
   color: var(--ink-900, #0E1A2B);
 }
 
-/* 페이지네이션 (추가) */
 .review-pagination {
     display: flex;
     align-items: center;

@@ -1,6 +1,6 @@
 .partnership-card{
   width: 100%;
-  min-width: 0;                  /* 그리드 계산에 영향 안 주도록 */
+  min-width: 0;
   border: 1px solid #0C2E86;
   border-radius: var(--radius-12);
   overflow: hidden;

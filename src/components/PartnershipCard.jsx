@@ -14,6 +14,7 @@ import "./PartnershipCard.css";
  *   hot: boolean
  * }
  */
+
 export default function PartnershipCard({ item, to, onClick }) {
   if (!item) return null;
 

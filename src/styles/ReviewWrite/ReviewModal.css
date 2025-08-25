@@ -1,10 +1,9 @@
-/* 오버레이 */
 .review-modal__overlay{
   position: fixed; inset: 0;
-  background: rgba(14,26,43,0.40); /* ink-900 기반 반투명 */
+  background: rgba(14,26,43,0.40);
   display: flex; align-items: center; justify-content: center;
   padding: 24px;
-  z-index: 1000; /* TopBanner(10)보다 높게 */
+  z-index: 1000;
 }
 
 /* 카드 */
@@ -69,7 +68,6 @@
   opacity: 1;
 }
 
-/* 푸터 버튼 */
 .review-modal__footer{ display: flex; justify-content: center; margin-top: 16px; }
 .btn-brand{
   height: 39px; padding: 0 16px;
@@ -78,14 +76,12 @@
   font-weight: 700; font-size: 17px; cursor: pointer;
 }
 
-/* 접근성 유틸 (이미 App.css에도 있을 수 있음) */
 .sr-only{
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
 
-/* 미리보기 표시 & 액션 버튼 */
-.upload-box.has-image { background: #000; } /* 대비감만 살짝 */
+.upload-box.has-image { background: #000; }
 
 .upload-preview{
   position: absolute; inset: 0;
@@ -96,19 +92,19 @@
 
 .upload-actions{
   position: absolute;
-  bottom: 6px;        /* 세로 위치 그대로 */
-  left: 0;            /* 좌우를 꽉 채운 뒤 */
+  bottom: 6px;
+  left: 0;
   right: 0;
   display: flex;
   gap: 6px;
-  justify-content: center; /* 가로 가운데 정렬 */
+  justify-content: center;
 }
 
 .upload-action{
   border: 0; border-radius: 4px;
   padding: 4px 8px;
   font-size: 12px; font-weight: 600;
-  background: #0C2E86; /* brand-500 기반 */
+  background: #0C2E86;
   color: #fff; cursor: pointer;
 }
 

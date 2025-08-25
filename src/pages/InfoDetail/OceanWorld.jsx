@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom"; // ✅ URL 파라미터 읽기
+import { useParams } from "react-router-dom";
 import "../../styles/InfoDetail/OceanWorld.css";
 import TopBanner from "../../components/TopBanner";
 import ReviewModal from "../ReviewWrite/ReviewModal";
@@ -15,7 +15,7 @@ function toAbsUrl(path) {
 }
 
 function OceanWorld() {
-    const { partnershipId } = useParams(); // ✅ 주소에서 partnershipID 추출
+    const { partnershipId } = useParams();
     const [activeTab, setActiveTab] = useState("info");
     const [showModal, setShowModal] = useState(false);
 
@@ -206,7 +206,7 @@ function OceanWorld() {
             {/* 리뷰 모달 */}
             {showModal && (
                 <ReviewModal
-                    partnershipId={partnershipId} // ✅ props로 전달
+                    partnershipId={partnershipId}
                     onClose={() => setShowModal(false)}
                 />
             )}

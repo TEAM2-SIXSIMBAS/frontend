@@ -19,19 +19,10 @@ const API_BASE = import.meta.env.VITE_API_BASE ?? "";
 // fallback용 임시 썸네일 (DTO에 imageUrl 없을 때만 사용)
 const random_img = (id) => `https://picsum.photos/400/300?random=${id}`;
 
-// ▼ 드롭다운 옵션
+// 드롭다운 옵션
 const ORGANIZATIONS = ["전체", "총학", "총동", "단과대", "학과", "기타"];
 const CATEGORIES    = ["전체", "음식", "카페", "생활", "문화"];
 const TYPES         = ["전체", "할인", "서비스"];
-
-// const SORTS = [
-//   { key: "idAsc", label: "등록순" },
-//   { key: "popular", label: "조회수 높은 순" },
-//   { key: "discountDesc", label: "할인율 높은 순" },
-//   { key: "discountAsc", label: "할인율 낮은 순" },
-//   { key: "deadlineAsc", label: "기한 빠른 순" },
-//   { key: "deadlineDesc", label: "기한 느린 순" },
-// ];
 
 const SORTS = [
   { key: "views", label: "조회수 높은 순" },
@@ -44,19 +35,19 @@ const SORTS = [
    DTO -> 카드 props 매핑
    - 서버 DTO: { id?, content, storeName, organization, category, type, imageUrl? }
    ========================================================= */
+
 const toCard = (dto, idx = 0, offset = 0) => {
-  // partnershipId가 있으면 최우선, 없으면 dto.id, 그래도 없으면 fallback
   const id = dto.partnershipId
 
   const imgUrl = dto.partnershipImageUrl
     ? `${API_BASE}${dto.partnershipImageUrl}`
     : random_img(id);
 
-  // (선택) 디버깅: 어떤 id가 매핑됐는지 확인하고 싶다면 주석 해제
+  // 어떤 id가 매핑됐는지 확인
   console.log("[toCard] dto.partnershipId =", dto.partnershipId, "dto.id =", dto.id, "=> id =", id);
 
   return {
-    id, // ← 라우팅에 쓰이는 값 (to={`/info/${item.id}`})
+    id, // 라우팅에 쓰이는 값 (to={`/info/${item.id}`})
     title: dto.content ?? "",
     merchant: dto.storeName ?? "",
     tags: [dto.organization, dto.type].filter(Boolean),
